@@ -1,0 +1,21 @@
+<div>
+  <h1><%= @author.author_name %></h1>
+
+  <div>
+    <h3>Books (<%= @author.titles.count %>)</h3>
+    <table class="table table-striped table-bordered">
+      <tr>
+	<th>Book Title</th>
+	<th>Publisher</th>
+	<th>ISBN</th>
+      </tr>
+      <% @author.titles.each do |title| %>
+	<tr>
+	  <td><%= link_to title.booktitle, title_path(title) %></td>
+	  <td><%= title.publisher %></td>
+	  <td><%= title.isbn %></td>
+	</tr>
+      <% end %>
+    </table>
+  </div>
+</div>

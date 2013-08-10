@@ -1,0 +1,49 @@
+<div>
+  <div class="row">
+    <div class="span2">
+      <% unless @title.image_url.blank? %>
+        <%= image_tag @title.image_url %>
+      <% end %>
+    </div>
+    <div class="span7">
+      <h1><%= @title.booktitle %></h1>
+
+      <% unless @title.authors.count.zero? %>
+	<h4>By 
+	  <%= @title.authors.map {|a| link_to a.author_name, author_path(a) }.join(", ").html_safe %>
+	</h4>
+      <% end %>
+
+      <% unless @title.publisher.blank? %>
+	<h4>Publisher: <%= @title.publisher %></h4>
+      <% end %>
+
+      <% unless @title.isbn.blank? %>
+	<h4>ISBN: <%= @title.isbn %></h4>
+      <% end %>
+    </div>
+  </div>
+ 
+  <div class="row">
+    <h3>Copies (<%= @title.books.count %>)</h3>
+    <table class="table table-striped table-bordered">
+      <tr>
+	<th>Status</th>
+	<th>Location</th>
+	<th>Price</th>
+	<th></th>
+      </tr>
+      <% @title.books.stock.each do |book| %>
+        <%= render partial: "titles/book_row", locals: {book: book} %>
+      <% end %>
+
+      <% @title.books.sold.each do |book| %>
+        <%= render partial: "titles/book_row", locals: {book: book} %>
+      <% end %>
+
+      <% @title.books.deleted.each do |book| %>
+        <%= render partial: "titles/book_row", locals: {book: book} %>
+      <% end %>
+    </table>
+  </div>
+</div>

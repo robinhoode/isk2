@@ -1,0 +1,11 @@
+
+<tr>
+  <td><%= book.status %></td>
+  <td><%= book.location.location_name %></td>
+  <td><%= book.our_price %></td>
+  <td>
+    <% if book.status == "STOCK" %>
+      <%= link_to "Mark as Sold", sold_book_path(book), class: "btn pull-right", confirm: "Are you sure?" %>
+    <% end %>
+  </td>
+</tr>
