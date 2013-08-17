@@ -1,12 +1,12 @@
 class SearchController < ApplicationController
   def index
-    @titles = Title.order("id DESC").limit(20)
+    @titles = Title.order("id DESC").paginate(page: params[:page])
   end
 
   def query
-    @titles = Title.search(params[:term])
+    @titles = Title.search(params[:term]).paginate(page: params[:page])
     render action: "results"
-  end  
+  end
 
   def advanced
     @titles = Title.advanced_search(params)

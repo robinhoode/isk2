@@ -3,17 +3,29 @@ require 'open-uri'
 class Title < ActiveRecord::Base
   self.table_name = "title"
 
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
+  mapping do
+    indexes :id, index: :not_analyzed
+
+    indexes :booktitle,    analyzer: 'snowball', boost: 100
+    indexes :publisher,    analyzer: 'snowball'
+    indexes :author_names, analyzer: 'snowball', as: "author_names"
+  end
+
+
   has_many :author_titles
   has_many :authors, :through => :author_titles
   has_many :books
 
   has_one :book_image
 
-  def attach_image!    
+  def attach_image!
     if self.book_image.blank?
       book_image = BookImage.create!(title_id: id)
       book_image.attach_image!(image_file_url)
-    else
+    elsif self.book_image.image_file.blank?
       self.book_image.attach_image!(image_file_url)
     end
   end
@@ -35,7 +47,7 @@ class Title < ActiveRecord::Base
   end
 
   def locations
-    books.map {|b| b.location.name rescue nil }.uniq.reject(&:blank?)    
+    books.map {|b| b.location.name rescue nil }.uniq.reject(&:blank?)
   end
 
   def self.inheritance_column
@@ -65,7 +77,7 @@ class Title < ActiveRecord::Base
 
   def self.search(term)
     queries = term.split(' ').map {|t| queries_for(t) }
-    
+
     where(queries.flatten.reduce(:or)).includes(:authors).references(:authors)
   end
 
@@ -82,5 +94,9 @@ class Title < ActiveRecord::Base
      search_isbn(term),
      search_author_name(term)
     ]
+  end
+
+  def author_names
+    authors.map(&:author_name).join(" ")
   end
 end
